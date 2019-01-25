@@ -1,4 +1,5 @@
 import * as restify from 'restify';
+import * as mongoose from 'mongoose';
 import { environment } from '../common/environment';
 import { Router } from '../common/router';
 
@@ -6,11 +7,20 @@ export class Server {
 
     application: restify.Server;
 
-    initRoutes(routers: Router[]): Promise<any>{
+    initializeDb(): mongoose.MongooseThenable{
+        //para usar a promise no mongoose
+        (<any>mongoose).Promise = global.Promise;
+        //url da constante do banco  e opcoes de conxoes mongoose
+        return mongoose.connect(environment.db.url, {
+            useMongoClient: true
+        });
+    }
 
-        return new Promise((resolve, reject)=>{
+    initRoutes(routers: Router[]): Promise<any> {
 
-            try{
+        return new Promise((resolve, reject) => {
+
+            try {
 
                 this.application = restify.createServer({
                     name: 'meat-api',
@@ -21,23 +31,24 @@ export class Server {
 
                 // ===routes===:
                 for (let router of routers) {
-                   
+
                     router.applyRoutes(this.application);
                 }
-              
+
                 this.application.listen(environment.server.port, () => {
-                    
+
                     resolve(this.application);
                 });
-            }catch(error){
+            } catch (error) {
 
                 reject(error);
             }
         });
     }
 
-    bootstrap(routers: Router[] = []): Promise<Server>{
+    bootstrap(routers: Router[] = []): Promise<Server> {
 
-        return this.initRoutes(routers).then(()=> this);
+        return this.initializeDb().then(() =>
+            this.initRoutes(routers).then(() => this));
     }
 }
