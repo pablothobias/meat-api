@@ -34,16 +34,32 @@ class UsersRouter extends Router {
 
         });
 
-        application.post('/users', (req, res, next) => {
+        application.post('/users', (req, resp, next) => {
 
             let user = new User(req.body);
             user.save().then(user => {
 
                 user.password = undefined;
-                res.json(user);
+                resp.json(user);
                 next();
             });
         });
+
+        application.put('/users/:id', (req, resp, next) => {
+            const options = { overwrite: true };
+            User.update({ _id: req.params.id }, req.body, options)
+                .exec().then(result => {
+                    if (result.n) {
+                        return User.findById(req.params.id);
+                    } else {
+                        resp.send(404);
+                    }
+                }).then(user => {
+                    resp.json(user);
+                    return next();
+                });
+        });
+        
     }
 }
 
