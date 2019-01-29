@@ -6,7 +6,7 @@ const user_model_1 = require("./user.model");
 class UsersRouter extends router_1.Router {
     applyRoutes(application) {
         application.get('/users', (req, resp, next) => {
-            user_model_1.User.findAll().then((users) => {
+            user_model_1.User.find().then((users) => {
                 resp.json(users);
                 return next();
             });
@@ -18,6 +18,14 @@ class UsersRouter extends router_1.Router {
                     next();
                 }
                 resp.send(404);
+                next();
+            });
+        });
+        application.post('/users', (req, res, next) => {
+            let user = new user_model_1.User(req.body);
+            user.save().then(user => {
+                user.password = undefined;
+                res.json(user);
                 next();
             });
         });

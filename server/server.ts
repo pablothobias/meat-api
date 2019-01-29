@@ -7,7 +7,7 @@ export class Server {
 
     application: restify.Server;
 
-    initializeDb(): mongoose.MongooseThenable{
+    initializeDb(): mongoose.MongooseThenable {
         //para usar a promise no mongoose
         (<any>mongoose).Promise = global.Promise;
         //url da constante do banco  e opcoes de conxoes mongoose
@@ -27,7 +27,8 @@ export class Server {
                     version: '1.0.0'
                 });
 
-                this.application.use(restify.plugins.queryParser());
+                this.application.use(restify.plugins.queryParser()); //transforma as querys em json
+                this.application.use(restify.plugins.bodyParser()); //transforma o body da request em json
 
                 // ===routes===:
                 for (let router of routers) {

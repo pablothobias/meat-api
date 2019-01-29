@@ -19,7 +19,8 @@ class Server {
                     name: 'meat-api',
                     version: '1.0.0'
                 });
-                this.application.use(restify.plugins.queryParser());
+                this.application.use(restify.plugins.queryParser()); //transforma as querys em json
+                this.application.use(restify.plugins.bodyParser()); //transforma o body da request em json
                 // ===routes===:
                 for (let router of routers) {
                     router.applyRoutes(this.application);

@@ -3,6 +3,7 @@
 import { Router } from '../common/router';
 import * as restify from 'restify';
 import { User } from './user.model';
+import { response } from 'spdy';
 
 class UsersRouter extends Router {
 
@@ -10,7 +11,7 @@ class UsersRouter extends Router {
 
         application.get('/users', (req, resp, next) => {
 
-            User.findAll().then((users) => {
+            User.find().then((users) => {
 
                 resp.json(users);
                 return next();
@@ -31,6 +32,17 @@ class UsersRouter extends Router {
                 next();
             });
 
+        });
+
+        application.post('/users', (req, res, next) => {
+
+            let user = new User(req.body);
+            user.save().then(user => {
+
+                user.password = undefined;
+                res.json(user);
+                next();
+            });
         });
     }
 }
