@@ -30,7 +30,7 @@ class UsersRouter extends router_1.Router {
             });
         });
         application.put('/users/:id', (req, resp, next) => {
-            const options = { overwrite: true };
+            const options = { overwrite: true }; //muda todo objeto
             user_model_1.User.update({ _id: req.params.id }, req.body, options)
                 .exec().then(result => {
                 if (result.n) {
@@ -41,6 +41,18 @@ class UsersRouter extends router_1.Router {
                 }
             }).then(user => {
                 resp.json(user);
+                return next();
+            });
+        });
+        application.patch('users/:id', (req, resp, next) => {
+            const options = { new: true }; //para fazer retornar o objeto modificado ao invés do antigo como resposta
+            user_model_1.User.findByIdAndUpdate(req.params.id, req.body, options)
+                .then(user => {
+                if (user) {
+                    resp.json(user);
+                    return next();
+                }
+                resp.send(404);
                 return next();
             });
         });

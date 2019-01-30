@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const restify = require("restify");
 const mongoose = require("mongoose");
 const environment_1 = require("../common/environment");
+const merge_patch_parser_1 = require("./merge-patch.parser");
 class Server {
     initializeDb() {
         //para usar a promise no mongoose
@@ -21,8 +22,10 @@ class Server {
                 });
                 this.application.use(restify.plugins.queryParser()); //transforma as querys em json
                 this.application.use(restify.plugins.bodyParser()); //transforma o body da request em json
+                this.application.use(merge_patch_parser_1.mergePatchBodyParser); //usar o content type diferente no método patch
                 // ===routes===:
                 for (let router of routers) {
+                    router.applyRoutes(this.application);
                     router.applyRoutes(this.application);
                 }
                 this.application.listen(environment_1.environment.server.port, () => {

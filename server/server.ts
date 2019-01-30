@@ -2,6 +2,7 @@ import * as restify from 'restify';
 import * as mongoose from 'mongoose';
 import { environment } from '../common/environment';
 import { Router } from '../common/router';
+import { mergePatchBodyParser } from './merge-patch.parser';
 
 export class Server {
 
@@ -29,10 +30,12 @@ export class Server {
 
                 this.application.use(restify.plugins.queryParser()); //transforma as querys em json
                 this.application.use(restify.plugins.bodyParser()); //transforma o body da request em json
+                this.application.use(mergePatchBodyParser); //usar o content type diferente no método patch
 
                 // ===routes===:
                 for (let router of routers) {
 
+                    router.applyRoutes(this.application);
                     router.applyRoutes(this.application);
                 }
 
