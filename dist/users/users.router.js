@@ -4,30 +4,22 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const router_1 = require("../common/router");
 const user_model_1 = require("./user.model");
 class UsersRouter extends router_1.Router {
+    constructor() {
+        super();
+        this.on('beforeRender', (document) => {
+            document.password = undefined;
+        });
+    }
     applyRoutes(application) {
         application.get('/users', (req, resp, next) => {
-            user_model_1.User.find().then((users) => {
-                resp.json(users);
-                return next();
-            });
+            user_model_1.User.find().then(this.render(resp, next));
         });
         application.get('users/:id', (req, resp, next) => {
-            user_model_1.User.findById(req.params.id).then(user => {
-                if (user) {
-                    resp.json(user);
-                    next();
-                }
-                resp.send(404);
-                next();
-            });
+            user_model_1.User.findById(req.params.id).then(this.render(resp, next));
         });
         application.post('/users', (req, resp, next) => {
             let user = new user_model_1.User(req.body);
-            user.save().then(user => {
-                user.password = undefined;
-                resp.json(user);
-                next();
-            });
+            user.save().then(this.render(resp, next));
         });
         application.put('/users/:id', (req, resp, next) => {
             const options = { overwrite: true }; //muda todo objeto
@@ -39,20 +31,23 @@ class UsersRouter extends router_1.Router {
                 else {
                     resp.send(404);
                 }
-            }).then(user => {
-                resp.json(user);
-                return next();
-            });
+            }).then(this.render(resp, next));
         });
         application.patch('users/:id', (req, resp, next) => {
             const options = { new: true }; //para fazer retornar o objeto modificado ao invés do antigo como resposta
             user_model_1.User.findByIdAndUpdate(req.params.id, req.body, options)
-                .then(user => {
-                if (user) {
-                    resp.json(user);
-                    return next();
+                .then(this.render(resp, next));
+        });
+        application.del('/users/:id', (req, resp, next) => {
+            user_model_1.User.remove({ _id: req.params.id })
+                .exec().then((cmdResult) => {
+                console.log(cmdResult);
+                if (cmdResult.result.n) {
+                    resp.send(204);
                 }
-                resp.send(404);
+                else {
+                    resp.send(404);
+                }
                 return next();
             });
         });
