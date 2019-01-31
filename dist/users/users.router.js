@@ -1,7 +1,8 @@
 "use strict";
-// Rota do users da aplicacao que no retorna todos os usuarios
 Object.defineProperty(exports, "__esModule", { value: true });
+// Rota do users da aplicacao que no retorna todos os usuarios
 const router_1 = require("../common/router");
+const restify_errors_1 = require("restify-errors");
 const user_model_1 = require("./user.model");
 class UsersRouter extends router_1.Router {
     constructor() {
@@ -12,14 +13,17 @@ class UsersRouter extends router_1.Router {
     }
     applyRoutes(application) {
         application.get('/users', (req, resp, next) => {
-            user_model_1.User.find().then(this.render(resp, next));
+            user_model_1.User.find().then(this.render(resp, next))
+                .catch(next);
         });
         application.get('users/:id', (req, resp, next) => {
-            user_model_1.User.findById(req.params.id).then(this.render(resp, next));
+            user_model_1.User.findById(req.params.id).then(this.render(resp, next))
+                .catch(next);
         });
         application.post('/users', (req, resp, next) => {
             let user = new user_model_1.User(req.body);
-            user.save().then(this.render(resp, next));
+            user.save().then(this.render(resp, next))
+                .catch(next);
         });
         application.put('/users/:id', (req, resp, next) => {
             const options = { overwrite: true }; //muda todo objeto
@@ -29,9 +33,10 @@ class UsersRouter extends router_1.Router {
                     return user_model_1.User.findById(req.params.id);
                 }
                 else {
-                    resp.send(404);
+                    throw new restify_errors_1.NotFoundError('Documento não encontrado');
                 }
-            }).then(this.render(resp, next));
+            }).then(this.render(resp, next))
+                .catch(next);
         });
         application.patch('users/:id', (req, resp, next) => {
             const options = { new: true }; //para fazer retornar o objeto modificado ao invés do antigo como resposta
@@ -46,10 +51,11 @@ class UsersRouter extends router_1.Router {
                     resp.send(204);
                 }
                 else {
-                    resp.send(404);
+                    throw new restify_errors_1.NotFoundError('Documento não encontrado');
                 }
                 return next();
-            });
+            })
+                .catch(next);
         });
     }
 }

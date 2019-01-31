@@ -1,14 +1,14 @@
 // Rota do users da aplicacao que no retorna todos os usuarios
-
 import { Router } from '../common/router';
 import * as restify from 'restify';
+import { NotFoundError } from 'restify-errors';
 import { User } from './user.model';
 
 class UsersRouter extends Router {
 
-    constructor(){
+    constructor() {
         super();
-        this.on('beforeRender', (document)=>{
+        this.on('beforeRender', (document) => {
             document.password = undefined;
         });
     }
@@ -17,19 +17,22 @@ class UsersRouter extends Router {
 
         application.get('/users', (req, resp, next) => {
 
-            User.find().then(this.render(resp, next));
+            User.find().then(this.render(resp, next))
+                .catch(next);
         });
 
         application.get('users/:id', (req, resp, next) => {
 
-            User.findById(req.params.id).then(this.render(resp, next));
+            User.findById(req.params.id).then(this.render(resp, next))
+                .catch(next);
 
         });
 
         application.post('/users', (req, resp, next) => {
 
             let user = new User(req.body);
-            user.save().then(this.render(resp, next));
+            user.save().then(this.render(resp, next))
+                .catch(next);
         });
 
         application.put('/users/:id', (req, resp, next) => {
@@ -39,9 +42,10 @@ class UsersRouter extends Router {
                     if (result.n) {
                         return User.findById(req.params.id);
                     } else {
-                        resp.send(404);
+                        throw new NotFoundError('Documento não encontrado');
                     }
-                }).then(this.render(resp, next));
+                }).then(this.render(resp, next))
+                .catch(next);
         });
 
         application.patch('users/:id', (req, resp, next) => {
@@ -60,10 +64,11 @@ class UsersRouter extends Router {
 
                         resp.send(204);
                     } else {
-                        resp.send(404);
+                        throw new NotFoundError('Documento não encontrado');
                     }
                     return next();
-                });
+                })
+                .catch(next);
         });
     }
 }
