@@ -1,5 +1,7 @@
 import * as mongoose from 'mongoose';
-import { validateCPF } from '../common/validators'
+import * as bcrypt from 'bcrypt';
+import { validateCPF } from '../common/validators';
+import { environment } from "../common/environment";
 
 export interface User extends mongoose.Document {
 
@@ -9,7 +11,7 @@ export interface User extends mongoose.Document {
 
 }
 
- const userSchema = new mongoose.Schema({
+const userSchema = new mongoose.Schema({
 
     name: {
         type: String,
@@ -33,7 +35,7 @@ export interface User extends mongoose.Document {
         required: false,
         enum: ['M', 'F']
     },
-    cpf:{
+    cpf: {
         type: String,
         required: false,
         //validador personalizado
@@ -42,6 +44,74 @@ export interface User extends mongoose.Document {
             message: '{PATH}: Invalid CPF ({VALUE})'
         }
     }
- }); 
+});
 
- export const User = mongoose.model<User>('User', userSchema);
+const hasPassword = (obj, next) => {
+
+    bcrypt.hash(obj.password, environment.security.saltRounds)
+        .then(hash => {
+            obj.password = hash;
+            next();
+        }).catch(next);
+}
+
+const saveMiddlewarev = function (next) {
+
+    const user: User = this;
+
+    if (!user.isModified('password')) {
+        next();
+    } else {
+        hasPassword(user, next);
+    }
+}
+
+const updateMiddlewarev = function (next) {
+
+    if (!this.getUpdate().password) {
+        next();
+    } else {
+        hasPassword(this.getUpdate(), next);
+    }
+}
+
+userSchema.pre('save', saveMiddlewarev);
+userSchema.pre('update', updateMiddlewarev);
+userSchema.pre('findOneAndUpdate', updateMiddlewarev);
+
+export const User = mongoose.model<User>('User', userSchema);
+
+
+// === MIDDLEWARE PARA DOCUMENTO E QUERY ===
+
+//MIDDLEWARE PARA HASHEAR O PASSWORD NOS MÉTODOS HTTP QUE CONTÉM O SAVE
+//nao pode ser arrow function aqui por causa do this
+// userSchema.pre('save', function (next) {
+//     //atribuindo o documento(this), a constante user
+//     const user: User = this;
+//     //se o password do documento nao foi alterado
+//     if (!user.isModified('password')) {
+//         next();
+//     } else {
+//         bcrypt.hash(user.password, environment.security.saltRounds)
+//             .then(hash => {
+//                 user.password = hash;
+//                 next();
+//             }).catch(next);
+//     }
+// });
+
+// //MIDDLEWARE PARA HASHEAR O PASSWORD NOS MÉTODOS HTTP QUE CONTÉM O UPDATE
+// userSchema.pre('findOneAndUpdate', function (next) {
+//     //AQUI SE TRATA DE UMA QUERY E NAO DE UM DOCUMENTO
+//     //se o password da query nao foi alterado
+//     if (!this.getUpdate().password) {
+//         next();
+//     } else {
+//         bcrypt.hash(this.getUpdate().password, environment.security.saltRounds)
+//             .then(hash => {
+//                 this.getUpdate().password = hash;
+//                 next();
+//             }).catch(next);
+//     }
+// });

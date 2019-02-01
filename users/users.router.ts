@@ -36,7 +36,7 @@ class UsersRouter extends Router {
         });
 
         application.put('/users/:id', (req, resp, next) => {
-            const options = { overwrite: true }; //muda todo objeto
+            const options = { runValidators: true, overwrite: true }; //muda todo objeto
             User.update({ _id: req.params.id }, req.body, options)
                 .exec().then(result => {
                     if (result.n) {
@@ -49,7 +49,7 @@ class UsersRouter extends Router {
         });
 
         application.patch('users/:id', (req, resp, next) => {
-            const options = { new: true } //para fazer retornar o objeto modificado ao invés do antigo como resposta
+            const options = { runValidators: true, new: true } //para fazer retornar o objeto modificado ao invés do antigo como resposta
             User.findByIdAndUpdate(req.params.id, req.body, options)
                 .then(this.render(resp, next));
         });
