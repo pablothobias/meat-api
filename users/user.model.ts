@@ -1,4 +1,5 @@
 import * as mongoose from 'mongoose';
+import { validateCPF } from '../common/validators'
 
 export interface User extends mongoose.Document {
 
@@ -31,6 +32,15 @@ export interface User extends mongoose.Document {
         type: String,
         required: false,
         enum: ['M', 'F']
+    },
+    cpf:{
+        type: String,
+        required: false,
+        //validador personalizado
+        validate: {
+            validator: validateCPF,
+            message: '{PATH}: Invalid CPF ({VALUE})'
+        }
     }
  }); 
 
