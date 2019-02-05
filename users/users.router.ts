@@ -1,7 +1,6 @@
 // Rota do users da aplicacao que no retorna todos os usuarios
 import { ModelRouter } from '../common/model-router';
 import * as restify from 'restify';
-import { NotFoundError } from 'restify-errors';
 import { User } from './user.model';
 
 class UsersRouter extends ModelRouter<User> {
