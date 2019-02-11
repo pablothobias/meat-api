@@ -27,7 +27,6 @@ class Server {
                 // ===routes===:
                 for (let router of routers) {
                     router.applyRoutes(this.application);
-                    router.applyRoutes(this.application);
                 }
                 this.application.listen(environment_1.environment.server.port, () => {
                     resolve(this.application);

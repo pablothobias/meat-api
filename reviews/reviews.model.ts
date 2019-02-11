@@ -31,7 +31,7 @@ const reviewSchema = new mongoose.Schema({
         ref: 'Restaurant',
         required: true
     },
-    User: {
+    user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true
