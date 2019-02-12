@@ -8,7 +8,11 @@ export interface User extends mongoose.Document {
     name: string;
     email: string;
     password: string;
+}
 
+export interface UserModel extends mongoose.Model<User> {
+
+    findByEmail(email: string): Promise<User>;
 }
 
 const userSchema = new mongoose.Schema({
@@ -46,6 +50,11 @@ const userSchema = new mongoose.Schema({
     }
 });
 
+userSchema.statics.findByEmail = function (email: string) {
+
+    return this.findOne({email}); //({email: email})
+}
+
 const hasPassword = (obj, next) => {
 
     bcrypt.hash(obj.password, environment.security.saltRounds)
@@ -79,7 +88,7 @@ userSchema.pre('save', saveMiddlewarev);
 userSchema.pre('update', updateMiddlewarev);
 userSchema.pre('findOneAndUpdate', updateMiddlewarev);
 
-export const User = mongoose.model<User>('User', userSchema);
+export const User = mongoose.model<User, UserModel>('User', userSchema);
 
 
 // === MIDDLEWARE PARA DOCUMENTO E QUERY ===

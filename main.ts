@@ -2,6 +2,7 @@
 
 import { Server } from './server/server';
 import { usersRouter } from './users/users.router';
+import { mainRouter } from './main.router';
 import { restaurantsRouter } from './restaurants/restaurants.router';
 import { reviewsRouter } from './reviews/reviews.router';
 
@@ -9,6 +10,7 @@ const server = new Server();
 
 //método que inicializa as rotas do servidor
 server.bootstrap([
+    mainRouter,
     usersRouter,
     restaurantsRouter,
     reviewsRouter
