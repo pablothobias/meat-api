@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 const environment_1 = require("../common/environment");
 const merge_patch_parser_1 = require("./merge-patch.parser");
 const error_handler_1 = require("./error.handler");
+const token_parser_1 = require("../security/token.parser");
 class Server {
     initializeDb() {
         //para usar a promise no mongoose
@@ -24,6 +25,7 @@ class Server {
                 this.application.use(restify.plugins.queryParser()); //transforma as querys em json
                 this.application.use(restify.plugins.bodyParser()); //transforma o body da request em json
                 this.application.use(merge_patch_parser_1.mergePatchBodyParser); //usar o content type diferente no método patch
+                this.application.use(token_parser_1.tokenParser); //para transformar o token no padrão jwt "Bearer TOKEN"
                 // ===routes===:
                 for (let router of routers) {
                     router.applyRoutes(this.application);
