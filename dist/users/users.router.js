@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // Rota do users da aplicacao que no retorna todos os usuarios
 const model_router_1 = require("../common/model-router");
 const user_model_1 = require("./user.model");
+const auth_handler_1 = require("../security/auth.handler");
 class UsersRouter extends model_router_1.ModelRouter {
     constructor() {
         super(user_model_1.User);
@@ -32,6 +33,7 @@ class UsersRouter extends model_router_1.ModelRouter {
         application.put(`${this.basePath}/:id`, [this.validateId, this.replace]);
         application.patch(`${this.basePath}/:id`, [this.validateId, this.update]);
         application.del(`${this.basePath}/:id`, [this.validateId, this.delete]);
+        application.post(`${this.basePath}/authenticate`, auth_handler_1.authenticate);
     }
 }
 exports.usersRouter = new UsersRouter();
