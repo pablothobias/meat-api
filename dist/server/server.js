@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const fs = require("fs");
 const restify = require("restify");
 const mongoose = require("mongoose");
 const environment_1 = require("../common/environment");
@@ -20,7 +21,9 @@ class Server {
             try {
                 this.application = restify.createServer({
                     name: 'meat-api',
-                    version: '1.0.0'
+                    version: '1.0.0',
+                    certificate: fs.readFileSync('./security/keys/cert.pem'),
+                    key: fs.readFileSync('./security/keys/key.pem')
                 });
                 this.application.use(restify.plugins.queryParser()); //transforma as querys em json
                 this.application.use(restify.plugins.bodyParser()); //transforma o body da request em json

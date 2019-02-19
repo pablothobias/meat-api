@@ -7,7 +7,7 @@ import { environment } from './common/environment';
 import { usersRouter } from './users/users.router';
 import { reviewsRouter } from './reviews/reviews.router';
 import { restaurantsRouter } from './restaurants/restaurants.router';
-import { User } from './users/user.model';
+import { User } from './users/users.model';
 import { Review } from './reviews/reviews.model';
 import { Restaurant } from './restaurants/restaurants.model';
 

@@ -7,7 +7,7 @@ const environment_1 = require("./common/environment");
 const users_router_1 = require("./users/users.router");
 const reviews_router_1 = require("./reviews/reviews.router");
 const restaurants_router_1 = require("./restaurants/restaurants.router");
-const user_model_1 = require("./users/user.model");
+const users_model_1 = require("./users/users.model");
 const reviews_model_1 = require("./reviews/reviews.model");
 const restaurants_model_1 = require("./restaurants/restaurants.model");
 let server;
@@ -20,7 +20,7 @@ const beforeAllTests = () => {
         reviews_router_1.reviewsRouter,
         restaurants_router_1.restaurantsRouter
     ])
-        .then(() => user_model_1.User.remove({}).exec())
+        .then(() => users_model_1.User.remove({}).exec())
         .then(() => reviews_model_1.Review.remove({}).exec())
         .then(() => restaurants_model_1.Restaurant.remove({}).exec())
         .catch(console.error);

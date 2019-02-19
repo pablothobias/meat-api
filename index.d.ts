@@ -1,4 +1,4 @@
-import { User } from './users/user.model';
+import { User } from './users/users.model';
 
 declare module 'restify' {
     export interface Request {

@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const jwt = require("jsonwebtoken");
-const user_model_1 = require("../users/user.model");
+const users_model_1 = require("../users/users.model");
 const environment_1 = require("../common/environment");
 exports.tokenParser = (req, resp, next) => {
     const token = extractToken(req);
@@ -27,15 +27,13 @@ function extractToken(req) {
 function applyBearer(req, next) {
     return (error, decoded) => {
         if (decoded) {
-            user_model_1.User.findByEmail(decoded.sub)
-                .then(user => {
+            users_model_1.User.findByEmail(decoded.sub).then(user => {
                 if (user) {
-                    //associar usuário no request
-                    req.authenticated = user;
+                    //associar o usuário no request
+                    req.authenticated = user; //
                 }
                 next();
-            })
-                .catch(next);
+            }).catch(next);
         }
         else {
             next();
