@@ -3,12 +3,13 @@ import * as fs from 'fs';
 import * as restify from 'restify';
 import * as mongoose from 'mongoose';
 
-import { environment } from '../common/environment';
 import { Router } from '../common/router';
-import { mergePatchBodyParser } from './merge-patch.parser';
-import { handleError } from './error.handler';
 
+import { mergePatchBodyParser } from './merge-patch.parser';
 import { tokenParser } from '../security/token.parser';
+import { handleError } from './error.handler';
+import { environment } from '../common/environment';
+import { logger } from '../common/logger';
 
 export class Server {
 
@@ -30,6 +31,7 @@ export class Server {
             const options: restify.ServerOptions = {
                 name: 'meat-api',
                 version: '1.0.0',
+                log: logger
             }
             if (environment.security.enableHTTPS) {
                 options.certificate = fs.readFileSync(environment.security.certificate);
@@ -39,6 +41,10 @@ export class Server {
             try {
 
                 this.application = restify.createServer(options);
+
+                this.application.pre(restify.plugins.requestLogger({
+                    log: logger
+                }));
 
                 this.application.use(restify.plugins.queryParser()); //transforma as querys em json
                 this.application.use(restify.plugins.bodyParser()); //transforma o body da request em json
