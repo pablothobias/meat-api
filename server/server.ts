@@ -64,6 +64,12 @@ export class Server {
 
                 this.application.on('restifyError', handleError);
 
+                //tomar cuidado pois vem informações como o token
+                // this.application.on('after', restify.plugins.auditLogger({
+                //     log: logger,
+                //     event: 'after'
+                // }));
+
             } catch (error) {
 
                 reject(error);

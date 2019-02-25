@@ -45,6 +45,11 @@ class Server {
                     resolve(this.application);
                 });
                 this.application.on('restifyError', error_handler_1.handleError);
+                //tomar cuidado pois vem informações como o token
+                // this.application.on('after', restify.plugins.auditLogger({
+                //     log: logger,
+                //     event: 'after'
+                // }));
             }
             catch (error) {
                 reject(error);
